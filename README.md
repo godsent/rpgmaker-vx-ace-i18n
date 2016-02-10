@@ -15,7 +15,7 @@ Localization for rpg maker vx ace
 
 ###Подключение
 - Как гем при помощи https://github.com/godsent/rpg-maker-side-script-loader
-- ИЛИ вставте batch.rb как обычный скрипт
+- ИЛИ вставте batch.rb https://raw.githubusercontent.com/godsent/rpgmaker-vx-ace-i18n/master/batch.rb как обычный скрипт
 
 ###Словари
 Словарь представляет собой Ruby Hash ( К сожалению из ACE безжалостно удалены многие стандартные руби классы, в том числе и YAML)  произвольной вложенности со строковыми или символьными ключами.
