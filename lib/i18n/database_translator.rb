@@ -1,7 +1,7 @@
 module I18n::DatabaseTranslator 
   def self.watch(klass, *method_names)
-    klass.class_exec(method_names) do 
-      method_names.flatten.each do |method_name|
+    klass.class_exec(method_names) do |names|
+      names.flatten.each do |method_name|
         original_method_name = "original_#{method_name}_for_translator"
         alias_method original_method_name, method_name
 
