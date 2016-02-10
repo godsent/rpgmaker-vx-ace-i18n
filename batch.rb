@@ -1,4 +1,4 @@
-#lib/i18n.rb
+#gems/i18n/lib/i18n.rb
 module I18n
   DICTS = {}
   LOCALES = {}
@@ -55,12 +55,12 @@ module I18n
   end
 end
 
-#lib/i18n/errors.rb
+#gems/i18n/lib/i18n/errors.rb
 module I18n::Errors
   class KeyNotFound < StandardError
   end
 end
-#lib/i18n/ru.rb
+#gems/i18n/lib/i18n/ru.rb
 #encoding=utf-8
 I18n.add :ru, 'Русский', {
   basic: {
@@ -148,7 +148,7 @@ I18n.add :ru, 'Русский', {
     language: 'Язык'
   }
 }
-#lib/i18n/en.rb
+#gems/i18n/lib/i18n/en.rb
 I18n.add :en, 'English', {
   basic: {
     currency_unit: 'G',
@@ -235,7 +235,7 @@ I18n.add :en, 'English', {
     language: 'Language'
   }
 }
-#lib/i18n/database_translator.rb
+#gems/i18n/lib/i18n/database_translator.rb
 module I18n::DatabaseTranslator 
   def self.watch(klass, *method_names)
     klass.class_exec(method_names) do 
@@ -255,7 +255,7 @@ module I18n::DatabaseTranslator
     end
   end
 end
-#lib/i18n/window.rb
+#gems/i18n/lib/i18n/window.rb
 class I18n::Window < Window_Selectable
   def initialize(x, y)
     width = 160
@@ -304,18 +304,18 @@ class I18n::Window < Window_Selectable
     locales.size
   end
 end
-#lib/i18n/patch.rb
+#gems/i18n/lib/i18n/patch.rb
 module I18n::Patch 
 end
 
 
-#lib/i18n/patch/object_patch.rb
+#gems/i18n/lib/i18n/patch/object_patch.rb
 class Object 
   def t(*args, &block)
     I18n.t(*args, &block)
   end
 end
-#lib/i18n/patch/string_patch.rb
+#gems/i18n/lib/i18n/patch/string_patch.rb
 class String 
   def underscore
     chars.first.downcase + chars.to_a[1..-1].inject('') do |res, char| 
@@ -324,7 +324,7 @@ class String
     end
   end
 end
-#lib/i18n/patch/rpg_system_patch.rb
+#gems/i18n/lib/i18n/patch/rpg_system_patch.rb
 class RPG::System
   def elements
     t 'basic.elements'
@@ -342,7 +342,7 @@ class RPG::System
     t 'basic.weapon_types'
   end
 end
-#lib/i18n/patch/rpg_system_terms_patch.rb
+#gems/i18n/lib/i18n/patch/rpg_system_terms_patch.rb
 class RPG::System::Terms 
   def basic
     t "basic.basic_status"
@@ -360,7 +360,7 @@ class RPG::System::Terms
     t "basic.commands"
   end
 end
-#lib/i18n/patch/vocab_patch.rb
+#gems/i18n/lib/i18n/patch/vocab_patch.rb
 module Vocab
   def self.set
     %w(
@@ -427,7 +427,7 @@ module Vocab
     t 'basic.currency_unit'
   end
 end
-#lib/i18n/patch/watcher_patch.rb
+#gems/i18n/lib/i18n/patch/watcher_patch.rb
 [  
   [RPG::Actor, %w(name nickname)],
   [RPG::Class, %w(name)],
@@ -438,7 +438,7 @@ end
   [RPG::Armor, %w(name description)],
   [RPG::State, %w(name)]
 ].each { |arr| I18n::DatabaseTranslator.watch(*arr) }
-#lib/i18n/patch/game_interpreter_patch.rb
+#gems/i18n/lib/i18n/patch/game_interpreter_patch.rb
 class Game_Interpreter
   def command_101
     wait_for_message
@@ -510,7 +510,7 @@ class Game_Interpreter
     original_setup_choices_for_i18n params
   end
 end
-#lib/i18n/patch/scene_title_patch.rb
+#gems/i18n/lib/i18n/patch/scene_title_patch.rb
 class Scene_Title 
   alias original_create_command_window_for_i18n create_command_window
   def create_command_window
@@ -559,7 +559,7 @@ class Scene_Title
     update until @language_window.close?
   end
 end
-#lib/i18n/patch/window_title_command_patch.rb
+#gems/i18n/lib/i18n/patch/window_title_command_patch.rb
 class Window_TitleCommand
   alias original_make_command_list_for_i18n make_command_list
   def make_command_list
