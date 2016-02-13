@@ -33,6 +33,11 @@ module I18n
       DICTS[symbol] ||= {}
       DICTS[symbol].merge! dict
     end
+  
+    def add_to_locale(locale, dict)
+      raise ArgumentError, "Local #{symbole} was not found" unless DICTS.has_key? locale 
+      add locale, nil, dict
+    end
 
     def on_reload(&block)
       @on_reload ||= [] 
