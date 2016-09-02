@@ -3,7 +3,7 @@ I18n.add :en, 'English', {
     currency_unit: 'G',
     elements: [''] + %w(Physical Absorb Fire Ice Light Water Earth Air Holy Dark),
     weapon_types: [''] + %w(Axe Claws Spear Sword Katana Bow Dagger Hammer Staff Gun Rod),
-    skill_types:  [''] + %w(Skill Spell),
+    skill_types:  [''] + %w(Skill Spell Passive),
     armor_types:  [''] + %w(Common Magic Light Heavy Big Tiny).map { |p| "#{p} armor" },
     basic_status: %w(level lvl HP HP MP MP TP TP),
     parameters: [

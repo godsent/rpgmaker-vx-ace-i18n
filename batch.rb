@@ -18,7 +18,7 @@ module I18n
 
     def t(path)
       path.gsub(/['"]/, '').split('.').inject DICTS.fetch(current_locale) do |dict, key|
-        key = dict.is_a?(Array) && key.to_i.to_s == key ? key.to_i - 1 : key.to_sym  
+        key = dict.is_a?(Array) && key.to_i.to_s == key ? key.to_i - 1 : key.to_sym
         dict[key] || raise(I18n::Errors::KeyNotFound, path)
       end
     end
@@ -33,15 +33,15 @@ module I18n
       DICTS[symbol] ||= {}
       DICTS[symbol].merge! dict
     end
-  
+
     def add_to_locale(locale, dict)
-      raise ArgumentError, "Local #{symbole} was not found" unless DICTS.has_key? locale 
+      raise ArgumentError, "Local #{symbole} was not found" unless DICTS.has_key? locale
       add locale, nil, dict
     end
 
     def on_reload(&block)
-      @on_reload ||= [] 
-      @on_reload << block 
+      @on_reload ||= []
+      @on_reload << block
     end
 
     private
@@ -72,7 +72,7 @@ I18n.add :ru, 'Русский', {
     currency_unit: 'Зт.',
     elements: [''] + %w(Физический Aбсорб Огонь Лед Молния Вода Земля Воздух Святость Тьма),
     weapon_types: [''] + %w(Топор Когти Копье Меч Катана Лук Кинжал Молот Посох Огнестрельное Жезл),
-    skill_types:  [''] + %w(Навык Магия),
+    skill_types:  [''] + %w(Навык Магия Пассивное),
     armor_types:  [''] + %w(Обычная Магическая Легкая Тяжелая Большая Маленькая).map { |p| "#{p} броня" },
     basic_status: %w(уровня Ур HP HP MP MP TP TP),
     parameters: [
@@ -159,7 +159,7 @@ I18n.add :en, 'English', {
     currency_unit: 'G',
     elements: [''] + %w(Physical Absorb Fire Ice Light Water Earth Air Holy Dark),
     weapon_types: [''] + %w(Axe Claws Spear Sword Katana Bow Dagger Hammer Staff Gun Rod),
-    skill_types:  [''] + %w(Skill Spell),
+    skill_types:  [''] + %w(Skill Spell Passive),
     armor_types:  [''] + %w(Common Magic Light Heavy Big Tiny).map { |p| "#{p} armor" },
     basic_status: %w(level lvl HP HP MP MP TP TP),
     parameters: [
@@ -241,18 +241,18 @@ I18n.add :en, 'English', {
   }
 }
 #gems/i18n/lib/i18n/database_translator.rb
-module I18n::DatabaseTranslator 
+module I18n::DatabaseTranslator
   def self.watch(klass, *method_names)
-    klass.class_exec(method_names) do 
-      method_names.flatten.each do |method_name|
+    klass.class_exec(method_names) do |names|
+      names.flatten.each do |method_name|
         original_method_name = "original_#{method_name}_for_translator"
         alias_method original_method_name, method_name
 
-        define_method method_name do 
+        define_method method_name do
           result = send original_method_name
           if result.start_with?(I18n::TRANSLATE_MARK)
             t result.sub(I18n::TRANSLATE_MARK, '').strip
-          else 
+          else
             result
           end
         end
@@ -275,7 +275,7 @@ class I18n::Window < Window_Selectable
     hide
   end
 
-  def open 
+  def open
     super
     activate
     select current_index
@@ -310,20 +310,20 @@ class I18n::Window < Window_Selectable
   end
 end
 #gems/i18n/lib/i18n/patch.rb
-module I18n::Patch 
+module I18n::Patch
 end
 
 
 #gems/i18n/lib/i18n/patch/object_patch.rb
-class Object 
+class Object
   def t(*args, &block)
     I18n.t(*args, &block)
   end
 end
 #gems/i18n/lib/i18n/patch/string_patch.rb
-class String 
+class String
   def underscore
-    chars.first.downcase + chars.to_a[1..-1].inject('') do |res, char| 
+    chars.first.downcase + chars.to_a[1..-1].inject('') do |res, char|
       prefix = char.upcase == char ? '_' : ''
       res + prefix + char.downcase
     end
@@ -348,7 +348,7 @@ class RPG::System
   end
 end
 #gems/i18n/lib/i18n/patch/rpg_system_terms_patch.rb
-class RPG::System::Terms 
+class RPG::System::Terms
   def basic
     t "basic.basic_status"
   end
@@ -373,9 +373,9 @@ module Vocab
       ShopSell
       ShopCancel
       Possession
-      ExpTotal 
-      ExpNext 
-      SaveMessage 
+      ExpTotal
+      ExpNext
+      SaveMessage
       LoadMessage
       File
       PartyName
@@ -426,22 +426,22 @@ module Vocab
 
   set
   I18n.on_reload(&method(:set).to_proc)
-  
+
   # Currency Unit
   def self.currency_unit
     t 'basic.currency_unit'
   end
 end
 #gems/i18n/lib/i18n/patch/watcher_patch.rb
-[  
-  [RPG::Actor, %w(name nickname)],
+[
+  [RPG::Actor, %w(name nickname description)],
   [RPG::Class, %w(name)],
-  [RPG::Skill, %w(name description)],
+  [RPG::Skill, %w(name description message1)],
   [RPG::Enemy, %w(name)],
   [RPG::Item, %w(name description)],
   [RPG::Weapon, %w(name description)],
   [RPG::Armor, %w(name description)],
-  [RPG::State, %w(name)]
+  [RPG::State, %w(name message1 message2 message3 message4)]
 ].each { |arr| I18n::DatabaseTranslator.watch(*arr) }
 #gems/i18n/lib/i18n/patch/game_interpreter_patch.rb
 class Game_Interpreter
@@ -465,11 +465,11 @@ class Game_Interpreter
     case next_event_code
     when 102  # Show Choices
       @index += 1
-      default_index = @list[@index].parameters.last 
+      default_index = @list[@index].parameters.last
       choices = @list[@index].parameters.first.map do |choice|
-        if choice.start_with? I18n::TRANSLATE_MARK 
+        if choice.start_with? I18n::TRANSLATE_MARK
           t choice.sub(I18n::TRANSLATE_MARK, '').strip.strip
-        else 
+        else
           choice
         end
       end
@@ -515,8 +515,21 @@ class Game_Interpreter
     original_setup_choices_for_i18n params
   end
 end
+#gems/i18n/lib/i18n/patch/game_map_patch.rb
+class Game_Map
+  alias original_display_name_for_i18n display_name
+  def display_name
+    text = original_display_name_for_i18n
+
+    if text && text.start_with?(I18n::TRANSLATE_MARK)
+      t text.sub(I18n::TRANSLATE_MARK, '').strip
+    else
+      text
+    end
+  end
+end
 #gems/i18n/lib/i18n/patch/scene_title_patch.rb
-class Scene_Title 
+class Scene_Title
   alias original_create_command_window_for_i18n create_command_window
   def create_command_window
     original_create_command_window_for_i18n
@@ -548,7 +561,7 @@ class Scene_Title
   end
 
   def open_language_window
-    @language_window.open 
+    @language_window.open
     update until @language_window.open?
   end
 
@@ -560,7 +573,7 @@ class Scene_Title
   end
 
   def close_language_window
-    @language_window.close 
+    @language_window.close
     update until @language_window.close?
   end
 end
